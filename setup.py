@@ -10,28 +10,6 @@ import importlib
 import subprocess
 import sys
 
-
-# Solve the chicken-and-egg problem of requiring packages *before* the
-# script has been parsed.
-for package in ['numpy', 'pkgconfig']:
-
-    # Don't try to install packages that already exist.
-    try:
-        mod = importlib.import_module(package)
-        continue
-    except ModuleNotFoundError:
-        pass
-
-    if package in sys.modules:
-        continue
-
-    # Inside a `virtualenv`, we are *not* allowed to install packages as
-    # a regular user.
-    if hasattr(sys, 'real_prefix'):
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', package])
-    else:
-        subprocess.check_call([sys.executable, '-m', 'pip', 'install', '--user', package])
-
 def get_include_dirs():
     import pkgconfig
     import numpy
@@ -60,7 +38,7 @@ setup(name = 'GKextCPy',
     description = """Graph Kernels: building the extension Python module. This is a wrapper package from C++ to Python.""",
     ext_modules = [GKextCPy_module],
     py_modules = ['GKextCPy'],
-    setup_requires = ['pkgconfig', 'numpy'],
-    install_requires = ['pkgconfig', 'numpy'],
+    setup_requires = ['pkgconfig'],
+    install_requires = ['numpy'],
     license = 'ETH Zurich',
 )
